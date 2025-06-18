@@ -35,7 +35,7 @@ popups.forEach(function (popup) {
   });
   popup.addEventListener("click", function (evt) {
     if (evt.target === evt.currentTarget) {
-      closeModal(evt.target);
+      closeModal(popup);
     }
   });
 });
@@ -61,7 +61,7 @@ function handleEditFormSubmit(evt) {
    profileTitle.textContent = name.value;
    profileJob.textContent = description.value;
 
-  closeModal(evt.target.closest('.popup'));
+  closeModal(popupEdit);
 }
 
 formEdit.addEventListener("submit", handleEditFormSubmit);
@@ -83,7 +83,7 @@ function handleAddFormSubmit(evt) {
 
   formAdd.reset();
 
-  closeModal(evt.target.closest('.popup'));
+  closeModal(popupNew);
 }
 
 formAdd.addEventListener("submit", handleAddFormSubmit);
