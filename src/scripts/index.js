@@ -4,7 +4,7 @@ import "../components/card.js";
 import "../components/modal.js";
 import { initialCards } from "./cards.js";
 import { openModal, closeModal } from "../components/modal.js";
-import { addCard, deleteFunction, likeFunction } from "../components/card.js";
+import { createCard, deleteFunction, likeFunction } from "../components/card.js";
 
 const popupImage = document.querySelector(".popup_type_image");
 const popupEdit = document.querySelector(".popup_type_edit");
@@ -17,7 +17,7 @@ const imagePopupCaption = popupImage.querySelector(".popup__caption");
 
 const cards = document.querySelector(".places__list");
 initialCards.forEach(function (item) {
-  const newcard = addCard(item, deleteFunction, likeFunction, openImagePopup);
+  const newcard = createCard(item, deleteFunction, likeFunction, openImagePopup);
   cards.append(newcard);
 });
 
@@ -30,10 +30,12 @@ function openImagePopup(cardData) {
 
 popups.forEach(function (popup) {
   popup.classList.add("popup_is-animated");
-  popup.querySelector(".popup__close").addEventListener("click", closeModal);
+  popup.querySelector(".popup__close").addEventListener("click", function() {
+    closeModal(popup);
+  });
   popup.addEventListener("click", function (evt) {
     if (evt.target === evt.currentTarget) {
-      closeModal(evt);
+      closeModal(evt.target);
     }
   });
 });
@@ -59,7 +61,7 @@ function handleEditFormSubmit(evt) {
    profileTitle.textContent = name.value;
    profileJob.textContent = description.value;
 
-  closeModal();
+  closeModal(evt.target.closest('.popup'));
 }
 
 formEdit.addEventListener("submit", handleEditFormSubmit);
@@ -76,12 +78,12 @@ function handleAddFormSubmit(evt) {
     link: image.value,
   };
 
-  const newcard = addCard(newplace, deleteFunction, likeFunction, openImagePopup);
+  const newcard = createCard(newplace, deleteFunction, likeFunction, openImagePopup);
   cards.prepend(newcard);
 
   formAdd.reset();
 
-  closeModal();
+  closeModal(evt.target.closest('.popup'));
 }
 
 formAdd.addEventListener("submit", handleAddFormSubmit);

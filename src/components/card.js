@@ -1,4 +1,4 @@
-function addCard(cardData, deleteFunc, likeFunc, openImagePopup) {
+function createCard(cardData, deleteFunc, likeFunc, openImagePopup) {
   const cardTemplate = document.querySelector("#card-template").content;
   const cardElement = cardTemplate.querySelector(".card").cloneNode(true);
   const cardImage = cardElement.querySelector(".card__image");
@@ -24,4 +24,4 @@ function likeFunction(button) {
   button.target.classList.toggle("card__like-button_is-active");
 }
 
-export { addCard, deleteFunction, likeFunction };
+export { createCard, deleteFunction, likeFunction };
