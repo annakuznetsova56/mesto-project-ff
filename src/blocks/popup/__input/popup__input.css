@@ -6,12 +6,26 @@
   font-size: 14px;
   line-height: 18px;
   box-sizing: border-box;
-  padding: 10px 0 0;
-  margin-bottom: 10px;
+  padding: 5px 0 0;
+  /* margin-bottom: 30px; */
 }
 
-.popup__input:last-of-type {
-  margin-bottom: 0;
+.form__input-error-container {
+  position: relative;
+  display: block;
+  height: 30px;
+}
+
+.form__input-error {
+  position: absolute;
+  display: block;
+  top: 5px;
+  color: red;
+  font-size: 12px;
+}
+
+.popup__input_type_error {
+  border-bottom-color: red;
 }
 
 @media screen and (max-width: 568px) {

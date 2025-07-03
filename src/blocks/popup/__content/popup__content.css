@@ -9,6 +9,17 @@
   padding: 34px 36px;
 }
 
+.popup_type_avatar .popup__content {
+  min-height: 272px;
+}
+
+.popup_type_delete .popup__content {
+  display: flex;
+  flex-direction: column;
+  min-height: 181px;
+  justify-content: space-between;
+}
+
 @media screen and (max-width: 568px) {
   .popup__content {
     width: 100%;
