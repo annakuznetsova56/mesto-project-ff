@@ -10,7 +10,7 @@ function closeModal(popup) {
 
 function closePopupEsc(evt) {
   if (evt.key === "Escape") {
-    closeModal(document.querySelector('.popup_is-opened'));
+    closeModal(document.querySelector(".popup_is-opened"));
   }
 }
 
