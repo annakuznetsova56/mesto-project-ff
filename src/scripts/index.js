@@ -1,23 +1,8 @@
-import "../pages/index.css";
-import "./cards.js";
-import "../components/card.js";
-import "../components/modal.js";
-import "../components/validation.js";
-import "../components/api.js";
+import "../pages/index.css"; 
 import { openModal, closeModal } from "../components/modal.js";
-import {
-  createCard,
-  deleteFunction,
-  likeFunction,
-} from "../components/card.js";
+import { createCard, updateLike } from "../components/card.js";
 import { enableValidation, clearValidation } from "../components/validation.js";
-import {
-  getUserInfo,
-  getInitialCards,
-  editProfile,
-  postNewCard,
-  editAvatar,
-} from "../components/api.js";
+import { getUserInfo, getInitialCards, editProfile, postNewCard, editAvatar, putLike, deleteLike, deleteCard } from "../components/api.js";
 
 const popupImage = document.querySelector(".popup_type_image");
 const popupEdit = document.querySelector(".popup_type_edit");
@@ -69,15 +54,19 @@ const avatar = formAvatar.elements.avatar_link;
 const formEditSubmitButton = formEdit.querySelector(".button");
 const formAddSubmitButton = formAdd.querySelector(".button");
 const formAvatarSubmitButton = formAvatar.querySelector(".button");
+const popupDeleteButton = popupDelete.querySelector(".popup__button");
 
 const profileTitle = document.querySelector(".profile__title");
 const profileJob = document.querySelector(".profile__description");
 const profileAvatar = document.querySelector(".profile__image");
 const cards = document.querySelector(".places__list");
-export let myUserId = 0;
+let myUserId = 0;
+let currentCardElement = null;
+let currentCardId = null;
 
 Promise.all([getUserInfo(), getInitialCards()])
   .then((results) => {
+   // console.log(results);
     const userInfo = results[0];
     const initialCards = results[1];
     profileTitle.textContent = userInfo.name;
@@ -89,8 +78,9 @@ Promise.all([getUserInfo(), getInitialCards()])
       const newcard = createCard(
         item,
         deleteFunction,
-        likeFunction,
-        openImagePopup
+        handleLike,
+        openImagePopup,
+        myUserId
       );
       cards.append(newcard);
     });
@@ -118,17 +108,19 @@ function handleEditFormSubmit(evt) {
   formEditSubmitButton.textContent = "Сохранение...";
   formEditSubmitButton.disabled = true;
 
-  profileTitle.textContent = name.value;
-  profileJob.textContent = description.value;
   editProfile(name.value, description.value)
     .then(() => {
-      formEditSubmitButton.textContent = "Сохранить";
-      formEditSubmitButton.disabled = true;
+      profileTitle.textContent = name.value;
+      profileJob.textContent = description.value;
 
       closeModal(popupEdit);
     })
     .catch((error) => {
       console.error("Ошибка:", error);
+    })
+    .finally(() => {
+      formEditSubmitButton.textContent = "Сохранить";
+      formEditSubmitButton.disabled = true;
     });
 }
 
@@ -145,13 +137,11 @@ function handleAddFormSubmit(evt) {
       const newcard = createCard(
         newplace,
         deleteFunction,
-        likeFunction,
-        openImagePopup
+        handleLike,
+        openImagePopup,
+        myUserId
       );
       cards.prepend(newcard);
-
-      formAddSubmitButton.textContent = "Сохранить";
-      formAddSubmitButton.disabled = true;
 
       formAdd.reset();
       clearValidation(formAdd, validationConfig);
@@ -160,6 +150,10 @@ function handleAddFormSubmit(evt) {
     })
     .catch((error) => {
       console.error("Ошибка:", error);
+    })
+    .finally(() => {
+      formAddSubmitButton.textContent = "Сохранить";
+      formAddSubmitButton.disabled = true;
     });
 }
 
@@ -175,9 +169,6 @@ function handleAvatarFormSubmit(evt) {
     .then((res) => {
       profileAvatar.style.backgroundImage = `url('${res.avatar}')`;
 
-      formAvatarSubmitButton.textContent = "Сохранить";
-      formAvatarSubmitButton.disabled = true;
-
       formAvatar.reset();
       clearValidation(formAvatar, validationConfig);
 
@@ -185,9 +176,40 @@ function handleAvatarFormSubmit(evt) {
     })
     .catch((error) => {
       console.error("Ошибка:", error);
+    })
+    .finally(() => {
+      formAvatarSubmitButton.textContent = "Сохранить";
+      formAvatarSubmitButton.disabled = true;
     });
 }
 
 formAvatar.addEventListener("submit", handleAvatarFormSubmit);
+
+function deleteFunction(cardElement, cardData) {
+    currentCardElement = cardElement;
+    currentCardId = cardData._id;
+    openModal(popupDelete);
+}
+
+popupDeleteButton.addEventListener("click", () => {
+    if (!currentCardElement) return;
+
+      deleteCard(currentCardId)
+        .then(() => {
+          currentCardElement.remove();
+          closeModal(popupDelete);
+          currentCardElement = null;
+        })
+        .catch((error) => {
+          console.error("Ошибка:", error);
+        });
+});
+
+function handleLike(isLiked, cardId, likesElement, button) {
+    const req = isLiked ? deleteLike : putLike
+    req(cardId)
+      .then(res => updateLike(likesElement, res.likes, button))
+      .catch(error => console.error("Ошибка:", error))
+} 
 
 enableValidation(validationConfig);
